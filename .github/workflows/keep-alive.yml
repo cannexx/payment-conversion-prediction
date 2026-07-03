@@ -1,0 +1,15 @@
+name: Keep Streamlit App Alive
+
+on:
+  schedule:
+    # 매 10분마다 실행 (UTC 기준)
+    - cron: '*/10 * * * *'
+  workflow_dispatch:  # Actions 탭에서 수동 실행도 가능
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Streamlit app
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" https://payment-conversion-prediction-kfmzlsbdapywsfresbxfkm.streamlit.app/
