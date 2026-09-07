@@ -76,6 +76,13 @@ streamlit run app.py
 
 샘플 CSV는 앱 내 **CSV 업로드 예측** 탭에서 다운로드할 수 있습니다.
 
+## 앱 슬립 방지 (Keep Alive)
+
+Streamlit Community Cloud 무료 플랜은 일정 시간 트래픽이 없으면 앱이 슬립 모드로 전환됩니다. 이를 막기 위해 두 가지 핑(ping) 장치를 이중으로 운영합니다.
+
+1. **GitHub Actions** (`.github/workflows/keep-alive.yml`): 10분 간격 cron으로 앱에 요청. 다만 GitHub의 scheduled workflow는 저장소 활동이 적을 경우 실행이 지연/스킵될 수 있어 보조 수단으로만 사용합니다.
+2. **cron-job.org** (2026-09-07 설정): 외부 무료 크론 서비스에서 10분 간격으로 앱 URL(`https://payment-conversion-prediction-kfmzlsbdapywsfresbxfkm.streamlit.app/`)에 직접 ping. GitHub Actions보다 스케줄 정확도가 높아 메인 슬립 방지 수단으로 사용 중.
+
 ## 기술 스택
 
 - Streamlit

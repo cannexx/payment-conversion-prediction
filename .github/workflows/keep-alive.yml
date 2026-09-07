@@ -1,3 +1,6 @@
+# 보조 슬립 방지 수단. 2026-09-07부터 cron-job.org(외부 무료 크론 서비스)를
+# 10분 간격 메인 핑으로 병행 운영 중 — GitHub scheduled workflow는 저장소 활동이
+# 적으면 실행이 지연/스킵될 수 있어 이 워크플로우만으로는 신뢰하기 어려움.
 name: Keep Streamlit App Alive
 
 on:
