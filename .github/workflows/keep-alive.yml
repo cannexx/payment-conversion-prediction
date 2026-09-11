@@ -1,6 +1,8 @@
-# 보조 슬립 방지 수단. 2026-09-07부터 cron-job.org(외부 무료 크론 서비스)를
-# 10분 간격 메인 핑으로 병행 운영 중 — GitHub scheduled workflow는 저장소 활동이
-# 적으면 실행이 지연/스킵될 수 있어 이 워크플로우만으로는 신뢰하기 어려움.
+# curl 기반 핑은 Streamlit이 돌려주는 정적 HTML 셸만 받을 뿐 실제 Python
+# 앱(WebSocket 세션)을 띄우지 않아 슬립 방지 효과가 없음이 확인됨(2026-09-11).
+# 이후 Playwright 헤드리스 브라우저로 실제 페이지를 렌더링해 방문하고,
+# 슬립 화면이 뜨면 "Yes, get this app back up!" 버튼까지 클릭하는 방식으로 전환.
+# cron-job.org는 검증 기간 동안 보조 수단으로 유지 중.
 name: Keep Streamlit App Alive
 
 on:
@@ -13,16 +15,18 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Streamlit app
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Playwright
         run: |
-          # Streamlit 프론트도어가 앱 요청 전에 쿠키 기반 리다이렉트(303)를
-          # 몇 차례 거치므로, 쿠키 저장(-c/-b) 없이 -L만 쓰면 리다이렉트 루프에
-          # 빠져 항상 303으로 끝난다. 쿠키를 유지해야 최종적으로 200을 받는다.
-          status=$(curl -s -L -c /tmp/cookies.txt -b /tmp/cookies.txt \
-            -o /dev/null -w "%{http_code}" --max-time 30 \
-            https://payment-conversion-prediction-kfmzlsbdapywsfresbxfkm.streamlit.app/)
-          echo "Final status: $status"
-          if [ "$status" != "200" ]; then
-            echo "::error::Keep-alive ping failed with status $status"
-            exit 1
-          fi
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Visit app with headless browser (wakes it if asleep)
+        run: python .github/scripts/keep_alive_visit.py
