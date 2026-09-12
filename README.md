@@ -80,8 +80,7 @@ streamlit run app.py
 
 Streamlit Community Cloud 무료 플랜에서는 일정 시간 트래픽이 없으면 앱이 슬립 모드로 전환됩니다. curl 같은 단순 HTTP 요청은 정적 HTML 셸만 받을 뿐 실제 Python 앱(WebSocket 세션)을 띄우지 않아 슬립 방지 효과가 없음이 확인되어(2026-09-11), 헤드리스 브라우저로 실제 방문하는 방식으로 전환했습니다.
 
-1. **GitHub Actions** (`.github/workflows/keep-alive.yml`): 10분 간격 cron으로 Playwright 헤드리스 브라우저가 앱 페이지를 직접 렌더링해 방문. 슬립 화면이 뜨면 "Yes, get this app back up!" 버튼까지 자동 클릭(`.github/scripts/keep_alive_visit.py`). 다만 GitHub의 scheduled workflow는 저장소 활동이 적으면 실행이 밀리거나 건너뛸 수 있습니다.
-2. **cron-job.org** (2026-09-07 설정): 외부 무료 크론 서비스에서 10분 간격으로 앱 URL(`https://payment-conversion-prediction-kfmzlsbdapywsfresbxfkm.streamlit.app/`)에 직접 ping. HTTP 핑이라 슬립 자체는 못 막지만, Playwright 전환 효과 검증 기간 동안 보조 수단으로 유지 중.
+**GitHub Actions** (`.github/workflows/keep-alive.yml`): 10분 간격 cron으로 Playwright 헤드리스 브라우저가 앱 페이지를 직접 렌더링해 방문. 슬립 화면이 뜨면 "Yes, get this app back up!" 버튼까지 자동 클릭(`.github/scripts/keep_alive_visit.py`). 전환 후 예약 실행이 정상적으로 이어지는 것을 확인해 외부 보조 수단(cron-job.org)은 제거했습니다.
 
 ## 기술 스택
 
